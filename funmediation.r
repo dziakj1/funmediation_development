@@ -64,7 +64,8 @@
 #' test of the overall effect. This test is done using the boot
 #' function from the boot package by Angelo Canty and Brian Ripley.
 #' It differs somewhat from the bootstrap approach used in a similar
-#' context by Lindquist (2012).
+#' context by Lindquist (2012).  We recommend using at least about 200 bootstraps
+#' and preferably 500 or more if time permits.
 #' @param boot_level One minus the nominal coverage to be attempted for
 #' the bootstrap confidence interval estimates.
 #' @param tvem_spline_order Input to be passed on to the TVEM function
@@ -194,7 +195,7 @@ funmediation <- function(data,
                              tvem_use_bic=FALSE,
                              binary_mediator=FALSE, # FALSE for numerical mediator, TRUE for dichotomous 0/1;
                              binary_outcome=FALSE, # FALSE for numerical outcome, TRUE for dichotomous 0/1;
-                             nboot=199,
+                             nboot=200,
                              boot_level=.05) {
   #-------------------------------------------;
   #--- PROCESSING OF INPUT -------------------;

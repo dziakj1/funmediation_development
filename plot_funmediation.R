@@ -71,7 +71,6 @@ plot.funmediation <- function(x,
     text(x=1.2,y=1,pos=4,labels=est2);
   }
   if (what=="tvem") {
-    workaround_plot <- function(x) {UseMethod("plot")}
-    workaround_plot(x$original_results$tvem_XM_details);
+   	plot(x$original_results$tvem_XM_details);
   }
 }
