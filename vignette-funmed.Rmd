@@ -16,24 +16,36 @@ knitr::opts_chunk$set(
 )
 ```
 
-* Introduction 
+# Introduction 
 
-The funmediation package provides software for exploring functional mediation in a sample of   intensive longitudinal data from multiple individuals. It assumes a dichotomous non-time-varying randomized treatment or exposure $X$, a distal outcome $Y$ observed at one time point, and a time-varying mediator $M(t)$.  The mediator is assumed to be measured as intensive longitudinal data.  The research question is whether it can be shown that the effect of $X$ on $Y$ is mediated by the process $M(t)$.  This situation was first studied by Lindquist (2012, JASA).  $M(t)$ can be numerical or binary, and $Y$ can also be either numerical or binary;  $X$ is assumed to be binary.
+The funmediation package fits a functional mediation model to intensive longitudinal data on a sample of multiple individuals. For each individual, it assumes a dichotomous non-time-varying randomized treatment or exposure $X$, a distal outcome $Y$ observed at one time point, and a time-varying mediator $M(t)$ observed repeatedly during the interval after $X$ is observed and before $Y$ is observed.  The research question is whether the effect of $X$ on $Y$ is mediated by the process $M(t)$.  This kind of model was first studied by Lindquist (2012, JASA).  $M(t)$ can be numerical or binary, and $Y$ can also be either numerical or binary;  $X$ is assumed to be binary.
 
-* Notation
+# Notation
 
-The mediation model is fit in stages.  First, the effect of $X$ on $M$ is fit behind the scenes as a time-varying effects (varying coefficients) model using the tvem package in R.  The assumed mean model is
+The mediation model is fit in stages.  First, the effect of $X$ on $M$ is fit behind the scenes as a time-varying effects (longitudinal varying coefficients) model (see Hastie and Tibshirani, 1993; Tan et al., 2012) using the ``tvem`` package.  The assumed mean model is
 $E(M_i(t)) = \alpha_0(t) + \alpha_1(t) X_i$
 for numerical $M(t)$, or
-$\mathrm{logit}^{-1}(E(M_i(t))) = \alpha_0(t) + \alpha_1(t) X_i$ 
+$\mathrm{logit}^{-1}(E(M_i(t))) = \alpha_0(t) + \alpha_X(t) X_i$ 
 for binary $M(t)$. 
-This is fit as a marginal model: that is, without random effects but with a sandwich covariance estimate to handle within-subject correlation, as in working-independence generalized estimating equations.
+This fits the marginal (population-averaged) mean: that is, without random effects but with a sandwich covariance estimate to handle within-subject correlation, as in working-independence generalized estimating equations.
 
-Next, the effect of $M$ on $X$ is modeled as a scalar-on-function functional regression using the pfr function in the refund R package. 
+Next, the effect of $X$ and $M(t)$ on $Y$ is modeled as a scalar-on-function functional regression (see Goldsmith et al., 2011) using the ``pfr`` function in the ``refund`` package. 
+The assumed mean model is
+$E(Y_i) = \beta_0 + \beta_{X}X_i+ \int\beta_M(t)M_i(t)dt$
+for numerical $Y$, or
+$\mathrm{logit}^{-1}(E(Y_i)) = \beta_0 + \beta_{X}X_i+ \int\beta_M(t)M_i(t)dt$
+for binary $Y$. 
 
+The indirect effect is calculated as the integral $\int \alpha_X(t)\beta_M(t)$.
+Because these functions are actually only estimated on a grid of points, the integral is actually approximated as a weighted average of the cross-products of the estimates. We do not have a standard error formula for this indirect effect, so we obtain a bootstrap confidence interval using the ``boot`` package in R.
 
+# Including Covariates
 
 Covariates can be included in predicting $M(t)$ and $Y$.  For convenience of notation, we assume a single subject-level covariate $S$ which predicts $M(t)$ and $Y$ and a single time-varying covariate $Z(t)$ which also predicts $M(t)$.  
+
+# Example
+
+## Getting ready to run the example
 
 First we load the required packages.  
 
@@ -44,8 +56,7 @@ library(boot)
 library(funmediation)
 ```
  
- 
-We then simulate data.  The info1 object will contain not only the simulated dataset, but the true values of the simulated parameters, including the indirect effect. 
+ We then simulate data.  The ``info1`` object will contain not only the simulated dataset, but the true values of the simulated parameters, including the indirect effect. 
 
 ```{r}
 set.seed(123);
@@ -53,7 +64,21 @@ info1 <- simulate_funmediation_example();
 the_data <- info1$dataset;
 ```
 
-Now call the functional mediation function.  Only 19 bootstrap samples are used below for the illustration.  Only 9 bootstraps allows  possible p-values of .05, .10, ..., 1.0.  At least 199 bootstraps is recommended in practice in order to increase precision and power, allowing p-values of .005, .010, .015, ....
+We can use the ``head`` and ``summary`` function in R, in order to look at the first few lines of the data
+```{r}
+print(head(the_data));
+```
+
+We can also look at univariate descriptive statistics:
+```{r}
+summary(the_data);
+```
+
+It would be reasonable to do other descriptive analyses also, but in order to demonstrate the function we proceed directly to the main analysis.
+
+# Running a Functional Mediation Model
+
+Now call the functional mediation function.  Only 20 bootstrap samples are used below for the illustration.  At least a few hundred bootstraps is recommended in practice in order to increase precision and power.
 
 ```{r}
 model1 <- funmediation(data=the_data,
@@ -62,17 +87,98 @@ model1 <- funmediation(data=the_data,
                              outcome=Y,
                              id=subject_id,
                              time=t,
-                             nboot=19);			
+                             nboot=20);			
 ```
 
-We can print and plot the results.
+The `print` function gives an initial overview of the results.
 
 ```{r}
 print(model1);
-plot(model1);
 ```
-  
 
-* Acknowledgements
+The `plot` function plots the results.  Three kinds of plots are available, represented by the options `coef`, `tvem`, and `pfr.`
+
+```{r}
+plot(model1, what_plot="coef");
+```
+
+```{r}
+plot(model1, what_plot="tvem");
+```
+
+```{r}
+plot(model1, what_plot="pfr");
+```
+
+                  
+## Interpreting the Output
+
+  
+## Exploring Information in the Output Objects
+  
+  
+## Including Covariates
+
+
+# Binary Outcomes
+
+```{r}
+set.seed(123);
+info2 <- simulate_funmediation_example(simulate_binary_Y=TRUE);
+the_data_binary <- info2$dataset;
+head(the_data_binary)
+```
+
+
+
+```{r}
+model2 <- funmediation(data=the_data_binary,
+                             treatment=X,
+                             mediator=M,
+                             outcome=Y,
+                             id=subject_id,
+                             time=t,
+                             binary_outcome=TRUE,
+                             nboot=20);			
+```
+
+```{r}
+print(model2);
+```
+
+
+
+```{r}
+plot(model1, what_plot="coef");
+```
+
+
+
+```{r}
+plot(model1, what_plot="tvem");
+```
+
+
+```{r}
+plot(model1, what_plot="pfr");
+```
+
+# Binary Mediators
+
+
+# Discussion
+
+
+# References
+
+
+* Goldsmith, J., Bobb, J., Crainiceanu, C., Caffo, B., and Reich, D. (2011). Penalized functional regression. Journal of Computational and Graphical Statistics, 20(4), 830-851.
+
+* Hastie, T, Tibshirani, R. (1993). Varying-coefficient models. Journal of the Royal Statistical Socety, B, 55:757-796.
+
+* Tan, X., Shiyko, M. P., Li, R., Li, Y., & Dierker, L. (2012). A time-varying effect model for intensive longitudinal data. Psychological Methods, 17: 61-77.
+
+
+# Acknowledgements
 
 The pfr function was developed by Jonathan Gellar, Mathew W. McLean, Jeff Goldsmith, and Fabian Scheipl, and the refund package was developed and maintained by Julia Wrobel and others
