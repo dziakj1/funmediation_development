@@ -101,6 +101,7 @@ simulate_funmediation_example <- function(
     Y=rep(short_Y,each=ntimes)
   );
   long_simulated_data <- temp[which(!is.na(temp$M)),];
+  rownames(long_simulated_data) <- NULL;
   return(list(time_grid=time_grid,
               true_alpha_int=alpha_int(time_grid),
               true_alpha_X=alpha_X(time_grid),

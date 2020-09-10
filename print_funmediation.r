@@ -32,7 +32,6 @@ print.funmediation <- function(x, ...) {
   cat("======================================================= \n");
   cat("Functional Mediation Model for Predicting Mediator from Treatment: \n");
   print(x$original_results$funreg_MY_details);
-  cat("======================================================= \n");
   cat("Scalar terms:\n")
   temp <- x$original_results$funreg_MY_details$coefficients;
   print(temp[-grep(x=names(temp),pattern=":")]);
