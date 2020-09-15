@@ -36,7 +36,7 @@ for numerical $Y_i$, or
 $\mathrm{logit}^{-1}(E(Y_i)) = \beta_0 + \beta_{X}X_i+ \int\beta_M(t)M_i(t)dt$
 for binary $Y_i$. 
 
-The indirect effect is calculated as the integral $\int \alpha_X(t)\beta_M(t)$.
+$\alpha_X(t)$ and $\beta_M(t)$ both must be nonzero in order for an indirect effect (mediation) to exist.  These two functions arise from two different kinds of functional regression;  one represents a model with a concurrent function as a response, while the other represents a model with a distal scalar response (see Ramsay and Silverman, 2005).  However, intuitively the size of the indirect effect has to do with both of them.  We operationally define the indirect effect here as the integral $\int \alpha_X(t)\beta_M(t)$.
 Because these functions are actually only estimated on a grid of points, the integral is actually approximated as a weighted average of the cross-products of the estimates. We obtain a bootstrap confidence interval for this quantity using the ``boot`` package.
 
 # Including Covariates
@@ -54,7 +54,7 @@ for numerical $Y_i$, or
 $\mathrm{logit}^{-1}(E(Y_i)) = \beta_0 + \beta_{X}X_i+ \beta_S S_i + \int\beta_M(t)M_i(t)dt$
 for binary $Y_i$.  Such a covariate can be included using the ``covariates_on_outcome`` argument in the package. Currently, the package assumes a subject-level $Y_i$ and does not support multiple functional coefficients in predicting the outcome; that is, the covariates in ``covariates_on_outcome`` cannot have time-varying values or effects.
 
-# Example
+# Example with Numerical Outcomes
 
 The following example shows how to simulate example data and then analyze it using the ``funmediation`` package.
 
@@ -69,29 +69,38 @@ library(boot)
 library(funmediation)
 ```
  
- We then simulate data.  The ``info1`` object will contain not only the simulated dataset, but the true values of the simulated parameters, including the indirect effect. 
+ We then simulate data. 
+```{r}
+set.seed(123)
+simulation1 <- simulate_funmediation_example(nsub=500)
+```
+
+The ``simulation1`` object will contain not only the simulated dataset itself, but the true values of the simulated parameters, including the indirect effect. 
 
 ```{r}
-set.seed(123);
-info1 <- simulate_funmediation_example();
-the_data <- info1$dataset;
+str(simulation1)
+```
+
+We need the simulated dataset as a data.frame object.
+```{r}
+the_data <- simulation1$dataset
 ```
 
 We can use the ``head`` and ``summary`` function in R, in order to look at the first few lines of the data
 ```{r}
-print(head(the_data));
+print(head(the_data))
 ```
 
 We can also look at univariate descriptive statistics:
 ```{r}
-summary(the_data);
+summary(the_data)
 ```
 
 It would be reasonable to do other descriptive analyses also, but in order to demonstrate the function we proceed directly to the main analysis.
 
 # Running a Functional Mediation Model
 
-Now call the functional mediation function.  Only 20 bootstrap samples are used below for the illustration.  At least a few hundred bootstraps is recommended in practice in order to increase precision and power.
+Now call the functional mediation function.  Only 10 bootstrap samples are used below for this quick illustration.  At least a few hundred bootstraps is recommended in practice in order to increase precision and power.
 
 ```{r}
 model1 <- funmediation(data=the_data,
@@ -100,45 +109,60 @@ model1 <- funmediation(data=the_data,
                              outcome=Y,
                              id=subject_id,
                              time=t,
-                             nboot=20);			
+                             nboot=10)	
 ```
+
+The warning message, ``extreme order statistics used as endpoints,'' occurs because too few bootstrap samples are used for the bootstrap confidence intervals to be valid;  however, we ignore this here in order for the vignette example to run quickly.
 
 The `print` function gives an initial overview of the results.
 
 ```{r}
-print(model1);
+print(model1)
 ```
 
-The `plot` function plots the results.  Three kinds of plots are available, represented by the options `coef`, `tvem`, and `pfr.`
+The first part of the output above summarizes the estimated indirect effect and its bootstrap confidence interval. The estimate for the indirect effect $\int \alpha_X(t)\beta_M(t)$ is given as -0.25.  Choosing the wider confidence interval in order to be conservative, a 95% confidence interval extends from about -0.35 to -0.14.  (This interval would not actually be reliable in practice because of the low number of bootstrap samples). Thus, there appears to be a significant negative indirect effect of $X$ on $Y$ mediated through $M(t)$.
+
+The second part of the printed output summarizes the TVEM model used to predict $M(t)$ from $X$. It only provides summary information on the model that was fit.  The time-varying coefficients are not actually printed, because they are functions rather than single numbers.  They can be plotted using the ``plot`` function, as described later.  They are also stored in the ``model1`` output object, as described later. 
+
+The third part summarizes the scalar-on-function functional regression model used to predict $Y$ from $X$ and $M(t)$. This model involves scalar (non-time-varying) coefficients for the intercept and the direct effect of $X$, and a functional (time-varying) coefficient for the effect of $(t)$.  The scalar coefficients are printed, but as before, the functional coefficient needs to be plotted using the plot function.  
+
+The fourth section of the printed output simply presents an estimate of the total effect of $X$ on $Y$ ignoring $M(t)$, obtained using the ``glm`` function.  $X$ is shown to have a total negative effect on $Y$, with an estimated coefficient of ``-0.30617`` and $p$-value of ``0.00175``.
+
+The `plot` function plots the results.  Three kinds of plots are available, represented by the options `tvem`, `pfr`, and `coef`.  The ``tvem'' plot shows the estimate for $\alpha_0(t)$ and $\alpha_1(t)$.
 
 ```{r}
-plot(model1, what_plot="coef");
+plot(model1, what_plot="tvem")
 ```
+
+The ``pfr`` plot shows the estimate for $\beta_M(t)$.
 
 ```{r}
-plot(model1, what_plot="tvem");
+plot(model1, what_plot="pfr")
 ```
+
+The ``coef`` plot summarizes all of the most important coefficients estimated in the model.  The upper left and upper right panes show the estimates of $\alpha_0(t)$ and $\alpha_X(t)$ from the model of the effect of $X$ on $M(t)$. The lower left shows the estimate of $\beta_M(t)$ from the model of the effect of $M(t)$ on $Y$ given $X$.  In the lower right panel, the estimate of the indirect is printed (not plotted, because it is a single number).
 
 ```{r}
-plot(model1, what_plot="pfr");
+plot(model1, what_plot="coef")
 ```
 
-                  
-## Interpreting the Output
 
-  
+
+ 
 ## Exploring Information in the Output Objects
   
   
 ## Including Covariates
 
 
-# Binary Outcomes
+## Using a Binary Mediator
+
+# Example with a Binary Outcome
 
 ```{r}
-set.seed(123);
-info2 <- simulate_funmediation_example(simulate_binary_Y=TRUE);
-the_data_binary <- info2$dataset;
+set.seed(123)
+info2 <- simulate_funmediation_example(simulate_binary_Y=TRUE, nsub=500)
+the_data_binary <- info2$dataset
 head(the_data_binary)
 ```
 
@@ -152,34 +176,13 @@ model2 <- funmediation(data=the_data_binary,
                              id=subject_id,
                              time=t,
                              binary_outcome=TRUE,
-                             nboot=20);			
+                             nboot=10)
 ```
 
 ```{r}
-print(model2);
+print(model2)
 ```
 
-
-
-```{r}
-plot(model1, what_plot="coef");
-```
-
-
-
-```{r}
-plot(model1, what_plot="tvem");
-```
-
-
-```{r}
-plot(model1, what_plot="pfr");
-```
-
-# Binary Mediators
-
-
-# Discussion
 
 
 # References
@@ -188,6 +191,10 @@ plot(model1, what_plot="pfr");
 * Goldsmith, J., Bobb, J., Crainiceanu, C., Caffo, B., and Reich, D. (2011). Penalized functional regression. Journal of Computational and Graphical Statistics, 20(4), 830-851.
 
 * Hastie, T, Tibshirani, R. (1993). Varying-coefficient models. Journal of the Royal Statistical Socety, B, 55:757-796.
+
+* Lindquist, M. A. (2012). Functional Causal Mediation Analysis With an Application to Brain Connectivity. Journal of the American Statistical Association, 107: 1297-1309.
+
+* Ramsay, J. O., & Silverman, B. W. (2005). Functional data analysis (2nd ed.).  New York: Springer.
 
 * Tan, X., Shiyko, M. P., Li, R., Li, Y., & Dierker, L. (2012). A time-varying effect model for intensive longitudinal data. Psychological Methods, 17: 61-77.
 
