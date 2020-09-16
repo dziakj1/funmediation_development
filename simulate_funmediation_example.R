@@ -44,7 +44,7 @@
 #' @export
 
 simulate_funmediation_example <- function(
-  nsub = 250,
+  nsub = 500,
   ntimes = 100,
   observe_rate = .4,
   alpha_int = function(t) {return(t^.5)}, # time-varying mean of mediator variable for the X=0 group;

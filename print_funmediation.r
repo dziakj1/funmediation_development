@@ -26,17 +26,19 @@ print.funmediation <- function(x, ...) {
   cat("\nComputation time:\n");
   print(x$bootstrap_results$time_required);
   cat("======================================================= \n");
-  cat("TVEM Model for Predicting Mediator from Treatment:\n");
+  cat("Time-varying Effects Model Predicting MEDIATOR from TREATMENT:\n");
   workaround_print <- getS3method("print", "tvem");
   workaround_print(x$original_results$tvem_XM_details,ornate=FALSE);
   cat("======================================================= \n");
-  cat("Functional Mediation Model for Predicting Mediator from Treatment: \n");
+  cat("Functional Regression Model Predicting OUTCOME from MEDIATOR \n");
+  cat("  and TREATMENT: \n");
   print(x$original_results$funreg_MY_details);
-  cat("Scalar terms:\n")
+  cat("Scalar terms in functional regression model:\n")
   temp <- x$original_results$funreg_MY_details$coefficients;
   print(temp[-grep(x=names(temp),pattern=":")]);
   cat("======================================================= \n");
-  cat("Parametric model for Predicting Outcome from Treatment and Mediator: \n");
+  cat("Parametric model for Predicting OUTCOME from TREATMENT \n");
+  cat("  ignoring MEDIATOR: \n");
   print(summary(x$original_results$direct_effect_details));
   cat("======================================================= \n");
   if(!is.null(x$original_results$tvem_IC_table)) {

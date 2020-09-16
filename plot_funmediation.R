@@ -46,7 +46,7 @@ plot.funmediation <- function(x,
          main="Functional effect of mediator on outcome"); # plot.gam function;
   }
   if (what=="coefs") {
-    if (use_panes) {par(mfrow=c(2,2));}
+    if (use_panes) {par(mfrow=c(2,2),mar=c(2,2,2,2));}
     plot(x$original_results$time_grid,
          x$original_results$alpha_int_estimate,
          xlab=expression(t),
@@ -63,11 +63,8 @@ plot.funmediation <- function(x,
          ylab=expression(beta[M](t)),
          main="Mediator on Outcome");
     plot(x=0:5,y=0:5,type="n",bty="n",xaxt="n",yaxt="n",xlab="",ylab="");
-    text(x=1.1,y=4,pos=4,labels=paste("Mediator intercept:"));
-    est1 <- round(x$original_results$beta_int_estimate,2);
-    text(x=1.2,y=3,pos=4,est1);
     text(x=1.1,y=2,pos=4,labels=paste("Indirect effect:"));
-    est2 <- round(x$bootstrap_results$indirect_effect_boot_estimate,2);
+    est2 <- round(x$bootstrap_results$indirect_effect_boot_estimate,3);
     text(x=1.2,y=1,pos=4,labels=est2);
   }
   if (what=="tvem") {
