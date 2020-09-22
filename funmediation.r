@@ -179,24 +179,24 @@
 
 
 funmediation <- function(data,
-                             treatment,
-                             mediator,
-                             outcome,
-                             id,
-                             time,
-                             tve_covariates_on_mediator=NULL,
-                             tie_covariates_on_mediator=NULL,
-                             covariates_on_outcome=NULL,
-                             tvem_penalize=TRUE,
-                             tvem_penalty_order=1,
-                             tvem_spline_order=3,
-                             tvem_num_knots=3,
-                             tvem_do_loop=FALSE,
-                             tvem_use_bic=FALSE,
-                             binary_mediator=FALSE, # FALSE for numerical mediator, TRUE for dichotomous 0/1;
-                             binary_outcome=FALSE, # FALSE for numerical outcome, TRUE for dichotomous 0/1;
-                             nboot=200,
-                             boot_level=.05) {
+                         treatment,
+                         mediator,
+                         outcome,
+                         id,
+                         time,
+                         tve_covariates_on_mediator=NULL,
+                         tie_covariates_on_mediator=NULL,
+                         covariates_on_outcome=NULL,
+                         tvem_penalize=TRUE,
+                         tvem_penalty_order=1,
+                         tvem_spline_order=3,
+                         tvem_num_knots=3,
+                         tvem_do_loop=FALSE,
+                         tvem_use_bic=FALSE,
+                         binary_mediator=FALSE, # FALSE for numerical mediator, TRUE for dichotomous 0/1;
+                         binary_outcome=FALSE, # FALSE for numerical outcome, TRUE for dichotomous 0/1;
+                         nboot=200,
+                         boot_level=.05) {
   #-------------------------------------------;
   #--- PROCESSING OF INPUT -------------------;
   #-------------------------------------------;
@@ -406,11 +406,11 @@ funmediation <- function(data,
     ###print(MEDIATOR[1:5,1:5])
     if (binary_mediator) {
       pfr_formula <- OUTCOME~lf(MEDIATOR,
-                                     presmooth="bspline",
-                                     presmooth.opts=list(nbasis=4))+TREATMENT;
+                                presmooth="bspline",
+                                presmooth.opts=list(nbasis=4))+TREATMENT;
     } else {
       pfr_formula <- OUTCOME~lf(MEDIATOR,
-                                     presmooth="interpolate")+TREATMENT;
+                                presmooth="interpolate")+TREATMENT;
     }
     if (num_covariates_on_outcome>0) {
       for (this_one in 1:num_covariates_on_outcome) {
@@ -423,14 +423,14 @@ funmediation <- function(data,
     ###save.image("working.rdata");
     if (binary_outcome) {
       funreg_MY <- try(refund::pfr(pfr_formula,
-                           scale=1,
-                           family=binomial()));
+                                   scale=1,
+                                   family=binomial()));
       # I wish I could let the user send the data and family in from outside the function,
       # but the pfr function does not allow this due to its unusual implementation
       # as a wrap-around for a hidden call to gam.;
     } else {
       funreg_MY <- try(refund::pfr(pfr_formula,
-                           family=gaussian()));
+                                   family=gaussian()));
     }
     if (any(class(funreg_MY)=="try-error")) {
       print(pfr_formula);
@@ -461,7 +461,7 @@ funmediation <- function(data,
     }
     if (binary_outcome) {
       model_for_total_effect_XY <- glm(glm_formula,
-                                        family=binomial);
+                                       family=binomial);
     } else {
       model_for_total_effect_XY <- glm(glm_formula);
     }
@@ -469,6 +469,11 @@ funmediation <- function(data,
     tau_int_se <- summary(model_for_total_effect_XY)$coefficients["(Intercept)","Std. Error"];
     tau_X_estimate <- as.numeric(model_for_total_effect_XY$coefficients["TREATMENT"]);
     tau_X_se <- summary(model_for_total_effect_XY)$coefficients["TREATMENT","Std. Error"];
+    if (binary_outcome) {
+      tau_X_pvalue <- summary(model_for_total_effect_XY)$coefficients["TREATMENT","Pr(>|z|)"];
+    } else {
+      tau_X_pvalue <- summary(model_for_total_effect_XY)$coefficients["TREATMENT","Pr(>|t|)"];
+    }
     #--- EFFECT OF TREATMENT X ON MEDIATOR M ---;
     local_long_data <- data.frame(id=rep(wide_id, each=nobs),
                                   time=rep(observed_time_grid, times=nsub),
@@ -503,16 +508,16 @@ funmediation <- function(data,
       IC_values <- rep(Inf,max_knots+1);
       for (this_num_knots in 0:max_knots) {
         tvem_XM <- suppressWarnings(tvem::tvem(data=local_long_data,
-                                         formula=tvem_formula1,
-                                         time=time,
-                                         id=id,
-                                         invar_effects=tvem_formula2,
-                                         spline_order=tvem_spline_order,
-                                         family=tvem_family,
-                                         penalty_function_order=tvem_penalty_order,
-                                         penalize=tvem_penalize,
-                                         num_knots=this_num_knots,
-                                         grid=time_grid_for_fitting));
+                                               formula=tvem_formula1,
+                                               time=time,
+                                               id=id,
+                                               invar_effects=tvem_formula2,
+                                               spline_order=tvem_spline_order,
+                                               family=tvem_family,
+                                               penalty_function_order=tvem_penalty_order,
+                                               penalize=tvem_penalize,
+                                               num_knots=this_num_knots,
+                                               grid=time_grid_for_fitting));
         IC_values[1+this_num_knots] <- ifelse(tvem_use_bic,
                                               tvem_XM$model_information$pseudo_bic,
                                               tvem_XM$model_information$pseudo_aic);
@@ -527,27 +532,27 @@ funmediation <- function(data,
     } else {
       if (get_details) {
         tvem_XM <- tvem::tvem(data=local_long_data,
-                        formula=tvem_formula1,
-                        time=time,
-                        id=id,
-                        invar_effects=tvem_formula2,
-                        spline_order=tvem_spline_order,
-                        family=tvem_family,
-                        penalty_function_order=tvem_penalty_order,
-                        penalize=tvem_penalize,
-                        num_knots=tvem_num_knots,
-                        grid=time_grid_for_fitting);
+                              formula=tvem_formula1,
+                              time=time,
+                              id=id,
+                              invar_effects=tvem_formula2,
+                              spline_order=tvem_spline_order,
+                              family=tvem_family,
+                              penalty_function_order=tvem_penalty_order,
+                              penalize=tvem_penalize,
+                              num_knots=tvem_num_knots,
+                              grid=time_grid_for_fitting);
       } else {
         tvem_XM <- suppressWarnings(tvem::tvem(data=local_long_data,
-                                         formula=tvem_formula1,
-                                         time=time,
-                                         id=id,
-                                         invar_effects=tvem_formula2,
-                                         spline_order=tvem_spline_order,
-                                         penalty_function_order=tvem_penalty_order,
-                                         penalize=tvem_penalize,
-                                         num_knots=tvem_num_knots,
-                                         grid=time_grid_for_fitting));
+                                               formula=tvem_formula1,
+                                               time=time,
+                                               id=id,
+                                               invar_effects=tvem_formula2,
+                                               spline_order=tvem_spline_order,
+                                               penalty_function_order=tvem_penalty_order,
+                                               penalize=tvem_penalize,
+                                               num_knots=tvem_num_knots,
+                                               grid=time_grid_for_fitting));
       }
     }
     alpha_int_estimate <- tvem_XM$grid_fitted_coefficients[[1]]$estimate;
@@ -576,6 +581,7 @@ funmediation <- function(data,
                           tau_int_se=tau_int_se,
                           tau_X_estimate=tau_X_estimate,
                           tau_X_se=tau_X_se,
+                          tau_X_pvalue=tau_X_pvalue,
                           indirect_effect_estimate=indirect_effect_estimate,
                           tvem_XM_details=tvem_XM,
                           funreg_MY_details=funreg_MY,
@@ -605,8 +611,8 @@ funmediation <- function(data,
   cat("Working on bootstrap results:\n");
   this_bootstrap <- 0;
   boot1 <- boot::boot(data=wide_data,
-                statistic=analyze_data_for_mediation,
-                R=nboot);
+                      statistic=analyze_data_for_mediation,
+                      R=nboot);
   cat("Done bootstrapping.\n");
   boot2 <- boot::boot.ci(boot1,conf=1-boot_level,type="norm");
   boot3 <- boot::boot.ci(boot1,conf=1-boot_level,type="basic");
