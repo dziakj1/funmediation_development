@@ -20,6 +20,9 @@
 #' from one observation to the next
 #' @param simulate_binary_Y  Whether Y should be generated from a binary
 #' logistic (TRUE) or Gaussian (FALSE) model
+#' @param make_covariate_S Whether to generate a random binary covariate S  
+#'  at the subject (non-time-varying) level.  It will be generated to have 
+#'  zero population-level relationship to the outcome. 
 #'
 #' @return A list with the following components:
 #' \describe{
@@ -55,11 +58,15 @@ simulate_funmediation_example <- function(
   sigma_Y = 1,
   sigma_M_error = 2,
   rho_M_error = .8,
-  simulate_binary_Y=FALSE )
+  simulate_binary_Y=FALSE,
+  make_covariate_S=FALSE)
 {
   time_grid <- (1:ntimes)/ntimes;  # vector of all possible times, scaled within 0 to 1;
   true_indirect <- mean(beta_M(time_grid)*alpha_X(time_grid));
   short_X <- rbinom(nsub,size=1,prob=.5);
+  if (make_covariate_S) {
+    short_S <- rbinom(nsub,size=1,prob=.5);
+  }
   # Simulate M from X...
   autoreg_error <- matrix(0,nsub,ntimes);
   autoreg_error[,1] <- rnorm(n=nsub,mean=0,sd=sigma_M_error);
@@ -100,6 +107,7 @@ simulate_funmediation_example <- function(
     M=as.vector(t(M)),
     Y=rep(short_Y,each=ntimes)
   );
+  if (make_covariate_S) {temp$S <- rep(short_S,each=ntimes);}
   long_simulated_data <- temp[which(!is.na(temp$M)),];
   rownames(long_simulated_data) <- NULL;
   return(list(time_grid=time_grid,
