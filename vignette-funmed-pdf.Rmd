@@ -210,7 +210,19 @@ plot(model_with_tve_covariate, what_plot="tvem")
 plot(model_with_tve_covariate, what_plot="pfr")
 ```
 
-Notice that the tilde (~) character needs to be included for the covariates.  This is done so that R will allow multiple covariates to be listed in the style of the right side of a formula, e.g., ``~S1 + S2``.   Also, to include the covariate with an assumption of a non-time-varying effect on $M$, you can use code like:
+Notice that the tilde (~) character needs to be included for the covariates.  This is done so that R will allow multiple covariates to be listed in the style of the right side of a formula, e.g., ``~S1 + S2``.   
+
+You can now get a time-varying effects plot which includes a coefficient for ``S`` also:
+
+```{r}
+plot(model_with_tie_covariate, what_plot="pfr")
+```
+
+However, in this example $\alpha_S(t)$ is not significantly nonzero at any time and does not change over time.  
+
+Alternatively, by specifying ``tie_covariates_on_mediator`` instead of ``tve_covariates_on_mediator,`` the covariate can be  assumed to have time-invariant effects rather than time-varying effects. 
+
+To include the covariate with an assumption of a non-time-varying effect on $M$, you can use code like:
 
 
 ```{r}
@@ -227,9 +239,12 @@ print(model_with_tie_covariate)
 plot(model_with_tie_covariate, what_plot="coef")
 ```
 
-By specifying ``tie_covariates_on_mediator`` instead of ``tve_covariates_on_mediator,`` the covariate is assumed to have time-invariant effects rather than time-varying effects. 
+Now there is a numerical estimate for $\alpha_S$ but no plot for $\alpha_S(t)$ anymore.
+
 
 ## Using a Binary Mediator
+
+If desired, you can include a binary mediator instead of a numerical mediator, and specify that the TVEM part of the model use the logistic link function.  The easiest way to demonstrate this (although it usually would not be advisable for real data because it involves loss of information) is to dichotomize $M$ in the simulated dataset.
 
 
 ```{r}
@@ -238,6 +253,7 @@ data_with_covariate$binary_M <- 1*(data_with_covariate$M > mean(data_with_covari
 head(data_with_covariate)
 ```
 
+Now we can use the code:
 
 ```{r}
 model_with_binary_M <- funmediation(data=data_with_covariate,
@@ -252,9 +268,11 @@ print(model_with_binary_M);
 plot(model_with_binary_M,type="coef")
 ```
 
-
+If you only included ``binary_M`` as the mediator without specifying the ``binary_mediator`` argument, the TVEM model would be fit using an identity link as for a normally distributed outcome, even though in this instance ``binary_M`` happens to consist of zeroes and ones and no other numbers.  This is probably not the best approach but might be an interesting comparison.  If the mediator is binary, it is probably better to use ``binary_M=TRUE`` in order to specify that the $\alpha$ coefficients are to be interpreted on the logit (logistic regression) scale.  A future version of this package might allow log link functions as an alternative to logit link functions. 
 
 # Example with a Binary Outcome
+
+Instead of, or in addition to, using a binary mediator, you can also use a binary outcome.  In this case, the scalar-on-function part of the model (the $\beta_0$, $\beta_X$ and $\beta_M(t)$ functions) would be fit using a logistic link function.  To demonstrate this, first  simulate a practice dataset with a binary outcome, using the ``simulate_binary_Y`` option in ``simulate_funmediation_example.`` We set this option to true (on) now, although it was false (off) by default.  (Note that we do not currently have a corresponding ``simulate_binary_M`` option in this function, as simulating realistic binary data trajectories is somewhat more difficult.)  
 
 ```{r}
 set.seed(123)
@@ -263,7 +281,7 @@ data_with_binary_Y <- simulation_with_binary_Y$dataset
 head(data_with_binary_Y)
 ```
 
-
+Now fit the model, using the new dataset with binary $Y$, and using the ``binary_outcome`` option.  By default, ``binary_outcome`` is false, but here we set it to true in order to use this approach.  The ``binary_outcome`` option indicates that the $\beta$ coefficients are to be interpreted as logistic regression coefficients, similar to the ``binary_mediator`` option which does the same for the $\alpha$ coefficients.
 
 ```{r}
 model_with_binary_Y <- funmediation(data=data_with_binary_Y,
