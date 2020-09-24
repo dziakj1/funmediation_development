@@ -68,6 +68,7 @@ plot.funmediation <- function(x,
     text(x=1.2,y=1,pos=4,labels=est2);
   }
   if (what=="tvem") {
+    par(mar=rep(2,4),cex.main=.7);
    	plot(x$original_results$tvem_XM_details);
   }
 }

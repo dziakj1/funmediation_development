@@ -14,6 +14,23 @@ print.funmediation <- function(x, ...) {
   cat("======================================================= \n");
   cat("Functional Regression Mediation Function Output \n");
   cat("======================================================= \n");
+  cat(paste("TREATMENT:",
+            x$important_variable_names[["treatment"]],
+            "(Assumed Binary)",
+            "\n"));
+  cat(paste("MEDIATOR:",
+            x$important_variable_names[["mediator"]],
+            ifelse(x$original_results$binary_mediator,
+                   "(Assumed Binary)",
+                   "(Assumed Numeric)"),
+            "\n"));
+  cat(paste("OUTCOME:",
+            x$important_variable_names[["outcome"]],
+            ifelse(x$original_results$binary_outcome,
+                   "(Assumed Binary)",
+                   "(Assumed Numeric)"),
+            "\n"));
+  cat("======================================================= \n");
   cat("Indirect effect bootstrap estimate:\n");
   cat(x$bootstrap_results$indirect_effect_boot_estimate);
   cat("\nIndirect effect bootstrap confidence interval:");
