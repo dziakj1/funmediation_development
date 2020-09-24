@@ -414,9 +414,9 @@ funmediation <- function(data,
     }
     if (num_covariates_on_outcome>0) {
       for (this_one in 1:num_covariates_on_outcome) {
-        assign(paste("wide_",covariates_on_outcome_names[this_one],sep=""),
+        assign(covariates_on_outcome_names[this_one],
                wide_covariates_on_outcome[,this_one]);
-        new_one <- as.formula(paste("~.+wide_",covariates_on_outcome_names[this_one],sep=""));
+        new_one <- as.formula(paste("~.+",covariates_on_outcome_names[this_one],sep=""));
         pfr_formula <- update(pfr_formula,new_one);
       }
     }
@@ -455,7 +455,7 @@ funmediation <- function(data,
     glm_formula <- OUTCOME~TREATMENT;
     if (num_covariates_on_outcome>0) {
       for (this_one in 1:num_covariates_on_outcome) {
-        new_one <- as.formula(paste("~.+wide_",covariates_on_outcome_names[this_one],sep=""));
+        new_one <- as.formula(paste("~.+",covariates_on_outcome_names[this_one],sep=""));
         glm_formula <- update(glm_formula,new_one);
       }
     }
@@ -585,7 +585,9 @@ funmediation <- function(data,
                           indirect_effect_estimate=indirect_effect_estimate,
                           tvem_XM_details=tvem_XM,
                           funreg_MY_details=funreg_MY,
-                          direct_effect_details=model_for_total_effect_XY);
+                          direct_effect_details=model_for_total_effect_XY,
+                          binary_mediator=binary_mediator,
+                          binary_outcome=binary_outcome);
       if (tvem_do_loop) {
         answer_list$tvem_IC_table <- IC_table;
       }
@@ -634,10 +636,15 @@ funmediation <- function(data,
     bootstrap_results$ICs_table_from_bootstraps <- ICs_table_from_bootstraps;
     bootstrap_results$num_knots_from_bootstraps <- table(paste(apply(ICs_table_from_bootstraps,1,which.min)+1,"knots"));
   }
+  important_variable_names <- list( time = time_variable_name, 
+                                 treatment = treatment_variable_name, 
+                                 mediator = mediator_variable_name, 
+                                 outcome = outcome_variable_name);
   answer <- list(observed_time_grid_for_debug=observed_time_grid,
                  wide_data_for_debug=wide_data,
                  original_results=original_results,
-                 bootstrap_results=bootstrap_results);
+                 bootstrap_results=bootstrap_results,
+                 important_variable_names=important_variable_names);
   class(answer) <- "funmediation";
   return(answer);
 }
