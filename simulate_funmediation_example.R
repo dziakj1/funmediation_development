@@ -50,10 +50,10 @@ simulate_funmediation_example <- function(
   nsub = 500,
   ntimes = 100,
   observe_rate = .4,
-  alpha_int = function(t) {return(t^.5)}, # time-varying mean of mediator variable for the X=0 group;
-  alpha_X = function(t) {return(-(t/2)^.5)}, # time-varying effect of X on the mediator;
-  beta_M = function(t) {(1/2)*(exp(t)-1)}, # functional (funreg) coefficient for cumulative effect of M on Y;
-  beta_int = 0,  # mean of Y if the X is zero and M is the 0 function;
+  alpha_int = function(t) {return(t^.5)}, # time-varying mean of M for the X=0 group;
+  alpha_X = function(t) {return(-(t/2)^.5)}, # time-varying effect of X on M;
+  beta_M = function(t) {(1/2)*(exp(t)-1)}, # functional coefficient for cumulative effect of M on Y;
+  beta_int = 0,  # mean of Y if the X = 0 and M is the 0 function;
   beta_X = .2,  # direct effect of X on Y after adjusting for M;
   sigma_Y = 1,
   sigma_M_error = 2,

@@ -1,4 +1,4 @@
-#' funmediation:  Fit funmediation model.
+#' funmediation:  Fit funmediation model
 #'
 #' Calculate indirect effect of a binary treatment on a scalar
 #' response as mediated by a longitudinal functional trajectory
@@ -27,7 +27,7 @@
 #' data: interpretability for applied scientists.
 #' Statistics Surveys, 13, 150-180.
 #' @references
-#' Goldsmith, J., Bobb, J., Crainiceanu, C., Caffo, B., and Reich, D.
+#' Goldsmith, J., Bobb, J., Crainiceanu, C., Caffo, B., & Reich, D.
 #' (2011). Penalized functional regression. Journal of Computational
 #' and Graphical Statistics, 20(4), 830-851.
 #' @references
@@ -70,13 +70,13 @@
 #' It differs somewhat from the bootstrap approach used in a similar
 #' context by Lindquist (2012).  We recommend using at least 200 bootstrap
 #' samples and preferably 500 or more if time permits.
-#' @param boot_level One minus the nominal coverage to be attempted for
+#' @param boot_level One minus the nominal coverage for
 #' the bootstrap confidence interval estimates.
-#' @param tvem_spline_order Input to be passed on to the TVEM function
-#' @param tvem_penalty_order Input to be passed on to the TVEM function
-#' @param tvem_penalize Input to be passed on to the TVEM function
+#' @param tvem_spline_order Input to be passed on to the tvem function
+#' @param tvem_penalty_order Input to be passed on to the tvem function
+#' @param tvem_penalize Input to be passed on to the tvem function
 #' @param tvem_do_loop Whether to use a loop to select the number of knots
-#' with a pseudo-AIC or pseudo-BIC
+#' with a pseudo-AIC or pseudo-BIC, passed on to the tvem function
 #' @param tvem_num_knots If tvem_do_loop is FALSE, then tvem_num_knots
 #' is passed on to the tvem function as num_knots,
 #' the number of interior knots for the B-splines. If tvem_do_loop is
@@ -137,8 +137,8 @@
 #' \item{tau_X_se}{Estimated standard error for the above.}
 #' \item{indirect_effect_estimate}{Estimated indirect effect, calculated as
 #' the dot product of the effect of treatment on mediator and the treatment-
-#' adjusted effect of mediator on outcome.  It is a scalar, even though they
-#' are functions of time.}
+#' adjusted effect of mediator on outcome.  It is a scalar, even though the
+#' two component effects are functions of time.}
 #' \item{tvem_XM_details}{Detailed output from the tvem function for the time-
 #' varying-effect model predicting the mediator, M, from the treatment, X.}
 #' \item{funreg_MY_details}{Detailed output from the refund::pfr function for
@@ -146,7 +146,7 @@
 #' the treatment, X, and mediator, M.}
 #' \item{direct_effect_details}{Detailed output from the linear or generalized
 #' linear model predicting the outcome from the treatment alone, ignoring the
-#' mediator (direct effect)}
+#' mediator (i.e., total effect)}
 #' }
 #'
 #' The bootstrap_results component has these components within it:
