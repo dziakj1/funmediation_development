@@ -1,18 +1,18 @@
 #' simulate_funmediation_example function
 #'
-#' Simulates a dataset for demonstrating the functional_mediation function.
+#' Simulates a dataset for demonstrating the funmediation function.
 #'
 #' @param nsub Number of subjects
 #' @param ntimes Number of potential times that could be observed on each subject
 #' @param observe_rate Proportion of potential times on which there are actually
-#' observations. Not all times are observed; this assumed to be completely random and
+#' observations. Not all times are observed; this is assumed to be completely random and
 #' to be done by design to reduce participant burden.
 #' @param alpha_int  Function representing the time-varying mean of mediator variable
 #'  for the X=0 group
 #' @param alpha_X Function representing the time-varying effect of X on the mediator
 #' @param beta_M Function representing the functional coefficient for cumulative
 #' (scalar-on-function) effect of M on Y adjusting for X
-#' @param beta_int  Mean of Y if the X is zero and M is the 0 function
+#' @param beta_int  Mean of Y if X is zero and M is the 0 function
 #' @param beta_X  Direct effect of X on Y after adjusting for M
 #' @param sigma_Y Error standard deviation of the outcome Y
 #' @param sigma_M_error Error standard deviation of the mediator M
@@ -21,24 +21,24 @@
 #' @param simulate_binary_Y  Whether Y should be generated from a binary
 #' logistic (TRUE) or Gaussian (FALSE) model
 #' @param make_covariate_S Whether to generate a random binary covariate S  
-#'  at the subject (non-time-varying) level.  It will be generated to have 
+#'  at the subject (i.e., time-invariant) level. It will be generated to have 
 #'  zero population-level relationship to the outcome. 
 #'
 #' @return A list with the following components:
 #' \describe{
 #' \item{time_grid}{The time grid for interpreting functional coefficients.}
 #' \item{true_alpha_int}{True value of the time-varying alpha_int parameter,
-#' representing the time-specific mean of the mediator M when the treatment value X is 0.}
+#' representing the time-specific mean of the mediator M when X is 0.}
 #' \item{true_alpha_X}{True value of the time-varying alpha_X parameter,
-#' representing the effect of X on M}
+#' representing the effect of X on M.}
 #' \item{true_beta_int}{True value of the beta_M parameter, representing
-#' the mean of the outcome Y when X=0 and M=0.}
+#' the mean of the outcome, Y, when X=0 and M=0.}
 #' \item{true_beta_M}{True value of the beta_M parameter, representing the
-#' functional effect of treatment on the outcome Y.}
+#' functional effect of the mediator, M, on the outcome, Y.}
 #' \item{true_beta_X}{True value of the beta_X parameter, representing the
-#' effect of treatment on the outcome Y adjusting for the mediator.}
+#' effect of X on the outcome, Y, adjusting for the mediator, M.}
 #' \item{true_indirect}{True value of the indirect parameter, representing
-#' the indirect (mediated) effect of treatment on the outcome Y.}
+#' the indirect (mediated) effect of X on the outcome, Y.}
 #' \item{dataset}{The simulated longitudinal dataset in long form.}
 #' }
 #'

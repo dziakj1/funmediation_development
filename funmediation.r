@@ -4,7 +4,7 @@
 #' response as mediated by a longitudinal functional trajectory
 #' (see Baron & Kenny, 1986; Lindquist, 2012; Coffman et al., 2019).
 #'
-#' @note This function calls the tvem function in this package.
+#' @note This function calls the tvem function in the tvem package.
 #' It also calls the pfr function in the refund package (see
 #' Goldsmith et al., 2011) to perform penalized functional regression.
 #' Some suggestions on interpreting the output from penalized functional
@@ -15,18 +15,22 @@
 #' distinction in social psychological research: Conceptual, strategic,
 #' and statistical considerations. Journal of Personality & Social
 #' Psychology, 51: 1173-1182.
+#' @references
 #' Coffman, D. L., Dziak, J. J., Li, R., & Piper, M. (2019). Functional
 #' regression mediation analysis with application to a smoking
 #' cessation intervention. Joint Statistical Meetings presentation,
 #' August 2019.
+#' @references
 #' Dziak, J. J., Coffman, D. L., Reimherr, M., Petrovich, J., Li, R.,
 #' Shiffman, S., & Shiyko, M. P. (2019). Scalar-on-function regression
 #' for predicting distal outcomes from intensively gathered longitudinal
-#' data: interpretability for applied scientists. Online publication,
-#' Statistics Surveys.
+#' data: interpretability for applied scientists.
+#' Statistics Surveys, 13, 150-180.
+#' @references
 #' Goldsmith, J., Bobb, J., Crainiceanu, C., Caffo, B., and Reich, D.
 #' (2011). Penalized functional regression. Journal of Computational
 #' and Graphical Statistics, 20(4), 830-851.
+#' @references
 #' Lindquist, M. A. (2012). Functional Causal Mediation Analysis
 #' With an Application to Brain Connectivity. Journal of the American
 #' Statistical Association, 107: 1297-1309.
@@ -44,15 +48,15 @@
 #' variable should be the same for each row for a given subject.
 #' @param id The name of the variable identifying each subject.
 #' @param time The name of the time variable.
-#' @param tve_covariates_on_mediator The time-varying-effects covariates,
+#' @param tve_covariates_on_mediator The covariates with time-varying-effects,
 #' if any, to be included in the model predicting the mediator from
 #' the treatment.
-#' @param tie_covariates_on_mediator The non-time-varying-effects
-#' covariates, if any, to be included in the
+#' @param tie_covariates_on_mediator The covariates with time-invariant
+#' effects, if any, to be included in the
 #' model predicting the mediator from the treatment.
 #' @param covariates_on_outcome The covariates, if any, to be included
 #' in the model predicting the outcome from the treatment.
-#' They are assumed to be subject-level (non-time-varying both in value
+#' They are assumed to be subject-level (time-invariant both in value
 #' and in effect).
 #' @param binary_mediator Whether the mediator should be modeled as
 #' dichotomous with a logistic model (TRUE),
@@ -64,8 +68,8 @@
 #' test of the overall effect. This test is done using the boot
 #' function from the boot package by Angelo Canty and Brian Ripley.
 #' It differs somewhat from the bootstrap approach used in a similar
-#' context by Lindquist (2012).  We recommend using at least about 200 bootstraps
-#' and preferably 500 or more if time permits.
+#' context by Lindquist (2012).  We recommend using at least 200 bootstrap
+#' samples and preferably 500 or more if time permits.
 #' @param boot_level One minus the nominal coverage to be attempted for
 #' the bootstrap confidence interval estimates.
 #' @param tvem_spline_order Input to be passed on to the TVEM function
@@ -105,41 +109,41 @@
 #' \item{time_grid}{Grid of time points on which the functional
 #' coefficients are estimated.}
 #' \item{alpha_int_estimate}{Estimated intercept function (as a vector
-#'  of estimates) from the TVEM regression of the mediator on the treatment}
+#'  of estimates) from the TVEM regression of the mediator, M, on treatment, X.}
 #' \item{alpha_int_se}{Estimated pointwise standard errors associated
-#' with the above}
+#' with the above.}
 #' \item{alpha_X_estimate}{Estimated time-varying treatment effect
-#' from the TVEM regression of the mediator on the treatment}
+#' from the TVEM regression of the mediator, M, on the treatment, X.}
 #' \item{alpha_X_se}{Estimated pointwise standard errors associated
-#' with the above}
+#' with the above.}
 #' \item{beta_int_estimate}{Estimated scalar intercept from the scalar-on-
-#' function regression of the outcome on the mediator and treatment}
-#' \item{beta_int_se}{Estimated standard error for the above}
-#' \item{beta_X_estimate}{Estimated scalar coefficient for the treatment,
-#' from the scalar-on-function regression of the outcome on the mediator
-#'  and treatment}
-#' \item{beta_X_se}{Estimated standard error for the above}
+#' function regression of the outcome, Y, on the mediator, M, and treatment, X.}
+#' \item{beta_int_se}{Estimated standard error for the above.}
+#' \item{beta_X_estimate}{Estimated scalar coefficient for the treatment, X,
+#' from the scalar-on-function regression of the outcome, Y, on the mediator,
+#' M, and treatment, X.}
+#' \item{beta_X_se}{Estimated standard error for the above.}
 #' \item{beta_M_estimate}{Estimated functional coefficient for the mediator,
-#'  from the scalar-on-function regression of the outcome on the mediator
-#'  and treatment}
+#'  M, from the scalar-on-function regression of the outcome, Y, on the mediator,
+#'  M, and treatment, X.}
 #' \item{beta_M_se}{Estimated pointwise standard errors associated with the above}
-#' \item{beta_M_pvalue}{The p-value for significance of mediator in
-#' predicting outcome, after adjusting for treatment}
-#' \item{tau_int_estimate}{Intercept from simple model predicting outcome
-#' directly from treatment}
-#' \item{tau_int_se}{Estimated standard error for the above}
-#' \item{tau_X_estimate}{Coefficient for treatment in model predicting outcome
-#' directly from treatment}
-#' \item{tau_X_se}{Estimated standard error for the above}
+#' \item{beta_M_pvalue}{The p-value for significance of the mediator, M, in
+#' predicting outcome, Y, after adjusting for treatment, X.}
+#' \item{tau_int_estimate}{Intercept from simple model predicting outcome, Y,
+#' directly from treatment, X.}
+#' \item{tau_int_se}{Estimated standard error for the above.}
+#' \item{tau_X_estimate}{Coefficient for treatment in model predicting outcome,
+#' Y, directly from treatment, X.}
+#' \item{tau_X_se}{Estimated standard error for the above.}
 #' \item{indirect_effect_estimate}{Estimated indirect effect, calculated as
 #' the dot product of the effect of treatment on mediator and the treatment-
 #' adjusted effect of mediator on outcome.  It is a scalar, even though they
 #' are functions of time.}
 #' \item{tvem_XM_details}{Detailed output from the tvem function for the time-
-#' varying-effect model predicting the mediator from the treatment}
+#' varying-effect model predicting the mediator, M, from the treatment, X.}
 #' \item{funreg_MY_details}{Detailed output from the refund::pfr function for
-#' the scalar-on-function functional regression predicting the outcome from
-#' the treatment and mediator}
+#' the scalar-on-function functional regression predicting the outcome, Y, from
+#' the treatment, X, and mediator, M.}
 #' \item{direct_effect_details}{Detailed output from the linear or generalized
 #' linear model predicting the outcome from the treatment alone, ignoring the
 #' mediator (direct effect)}
@@ -152,7 +156,7 @@
 #' \item{indirect_effect_boot_se}{Bootstrap standard error for the
 #' indirect effect (standard deviation of bootstrap sample estimates).}
 #' \item{indirect_effect_boot_norm_lower}{Lower end of the bootstrap
-#' confidence interval using the normal method in boot.ci inthe boot package.}
+#' confidence interval using the normal method in boot.ci in the boot package.}
 #' \item{indirect_effect_boot_norm_upper}{Upper end of the bootstrap
 #' confidence interval using the normal method.}
 #' \item{indirect_effect_boot_basic_lower}{Lower end of the bootstrap

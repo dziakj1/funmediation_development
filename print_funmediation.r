@@ -39,7 +39,7 @@ print.funmediation <- function(x, ...) {
         round(x$bootstrap_results$indirect_effect_boot_norm_upper,4)));
   cat("\n... by percentile method:\n");
   cat(c(round(x$bootstrap_results$indirect_effect_boot_perc_lower,4), ", ",
-          round(x$bootstrap_results$indirect_effect_boot_perc_upper,4)));
+        round(x$bootstrap_results$indirect_effect_boot_perc_upper,4)));
   cat("\nComputation time:\n");
   print(x$bootstrap_results$time_required);
   cat("======================================================= \n");

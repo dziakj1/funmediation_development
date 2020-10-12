@@ -1,9 +1,9 @@
-#' plot.funmediation:  Draw plots for a funmediation model.
+#' plot.funmediation: Produces plots for a funmediation model.
 #'
 #' Produces plots from a funmediation object produced by
-#' the funmediation function.  These plots will be shown on the default
-#' output device (likely the screen);  they can of course be
-#' written to a file instead, by preceding the call to plot the tvem
+#' the funmediation function. These plots will be shown on the default
+#' output device (likely the screen); they can of course be
+#' written to a file instead, by preceding the call to plot
 #' with a call to png(), pdf(), or other R graphic file output functions.
 #'
 #' @param x The funmediation object to be plotted.
@@ -11,17 +11,17 @@
 #' @param what_plot One of "pfr","coefs", or "tvem."  These options are as follows:
 #' \describe{
 #' \item{pfr}{For a "pfr" plot, the functional coefficient for predicting the
-#' outcome from the mediator (conditional on treatment), is shown, by calling
-#'  the plot method for the penalized functional regression results.  See the
-#'   documentation for plot.gam() in the mgcv function for more information,
-#'   because the pfr() function uses gam() as a back end.}
+#' outcome, Y, from the mediator, M (conditional on X), is shown, by calling
+#' the plot method for the penalized functional regression results. See the
+#' documentation for plot.gam() in the mgcv function for more information,
+#' because the pfr() function uses gam() as a back end.}
 #' \item{coefs}{For a "coefs" plot, the three important functional coefficients
-#' in the model (intercept for predicting mediator, treatment effect on mediator,
-#' and mediator effect on outcome adjusting for treatment) are plotted one after
-#' another.  That is, the plots are shown for alpha_int_estimate, alpha_X_estimate,
+#' in the model (intercept for predicting M, effect of X on M,
+#' and the effect of M on Y adjusting for X) are plotted one after
+#' another. That is, the plots are shown for the alpha_int_estimate, alpha_X_estimate,
 #' and beta_M_estimate, each as a function of time_grid.}
 #' \item{tvem}{For a "tvem" plot, the functional coefficients in the TVEM model
-#' predicting mediator from treatment are displayed.}
+#' predicting M from X are displayed.}
 #' }
 #' @param ... Further arguments currently not supported
 #'

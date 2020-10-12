@@ -88,21 +88,18 @@ We need the simulated dataset as a data.frame object.
 the_data <- simulation1$dataset
 ```
 
-We can use the ``head`` and ``summary`` function in R, in order to look at the first few lines of the data:
+We can use the ``head`` and ``summary`` function in R, in order to look at the first few lines of the data and univariate descriptive statistics.
+
 ```{r}
 print(head(the_data))
-```
-
-We can also look at univariate descriptive statistics:
-```{r}
 summary(the_data)
 ```
 
-It would be reasonable to do other descriptive analyses also, but in order to demonstrate the function we proceed directly to the main analysis.
+It would be reasonable to do other descriptive analyses but in order to demonstrate the function we proceed directly to the main analysis.
 
 # Running a Functional Mediation Model
 
-Now we call the functional mediation function.  Only 10 bootstrap samples are used below for this quick illustration.  At least a few hundred bootstraps are recommended in practice in order to increase precision and power.
+Now we call the functional mediation function. Only 10 bootstrap samples are used below for this quick illustration.  At least a few hundred bootstraps are recommended in practice in order to increase precision and power.
 
 ```{r}
 model1 <- funmediation(data=the_data,
@@ -136,9 +133,7 @@ The `plot` function plots the results.  Three kinds of plots are available, repr
 plot(model1, what_plot="tvem")
 ```
 
-The intercept plot appears to be significantly above zero and significantly increasing.  It can be interpreted as the mean $M(t)$ for the control ($X=0$) group because 
-$E(M(t)|X=0)=\alpha_0(t) + \alpha_X(t) \times 0=\alpha_0(t)$.  The treatment effect plot is generally nonzero and decreasing.  It can be interpreted as $E(M(t)|X=1)-E(M(t)|X=0)$, a kind of time-specific treatment effect on the mediator, and it suggests that as time goes on the $X=1$ group tends to become lower in average $M(t)$ than the $X=0$ group.
-
+The intercept plot appears to be significantly above zero and significantly increasing.  It can be interpreted as the mean $M(t)$ for the control ($X=0$) group because $E(M(t)|X=0)=\alpha_0(t) + \alpha_X(t) \times 0=\alpha_0(t)$.  The treatment effect plot is generally nonzero and decreasing.  It can be interpreted as $E(M(t)|X=1)-E(M(t)|X=0)$, a kind of time-specific treatment effect on the mediator, and it suggests that as time goes on the $X=1$ group tends to become lower in average $M(t)$ than the $X=0$ group.
 
 The ``pfr`` plot shows the estimate for $\beta_M(t)$.
 
@@ -238,12 +233,11 @@ model_with_tie_covariate <- funmediation(data=data_with_covariate,
                        id=subject_id,
                        time=t,
                        nboot=10)
- print(model_with_tie_covariate)
- plot(model_with_tie_covariate, what_plot="pfr")
+print(model_with_tie_covariate)
+plot(model_with_tie_covariate, what_plot="pfr")
 ```
 
-Now there are numerical estimates for $\alpha_S=-0.03008$ and $\beta_S=-0.00164$ but no plot for $\alpha_S(t)$ anymore.   Again, $S$ is not significant here either as a predictor of the mediator or of the outcome, because the coefficients are not large relative to their standard errors.
-
+Now there are numerical estimates for $\alpha_S=-0.03008$ and $\beta_S=-0.00164$ but no plot for $\alpha_S(t)$ anymore. Again, $S$ is not significant here either as a predictor of the mediator or of the outcome, because the coefficients are not large relative to their standard errors.
 
 ## Using a Binary Mediator
 
@@ -266,15 +260,18 @@ model_with_binary_M <- funmediation(data=data_with_covariate,
                              time=t,
                              binary_mediator=TRUE,
                              nboot=10)
-print(model_with_binary_M);
-plot(model_with_binary_M,type="coef")
 ```
 
-Note that if you only included ``binary_M`` as the mediator without specifying the ``binary_mediator`` argument, the TVEM model would be fit using an identity link (hence a linear model at any given time $t$) as for a normally distributed outcome, even though in this instance ``binary_M`` happens to consist of zeroes and ones and no other numbers.  The function would not detect that ``binary_M`` was binary.  The identity link is probably not the best approach but might be an interesting comparison.  If the mediator is binary, it is probably better to use ``binary_M=TRUE`` in order to specify that the $\alpha$ coefficients are to be interpreted on the logit (logistic regression) scale.  A future version of this package might allow log link functions as an alternative to logit link functions, but this is currently not available. 
+```{r}
+print(model_with_binary_M)
+plot(model_with_binary_M, type="coef")
+```
+
+Note that if you only included ``binary_M`` as the mediator without specifying the ``binary_mediator`` argument, the TVEM model would be fit using an identity link (hence a linear model at any given time $t$) as for a normally distributed outcome, even though in this instance ``binary_M`` happens to consist of zeroes and ones and no other numbers. The function would not detect that ``binary_M`` was binary. The identity link is probably not the best approach but might be an interesting comparison. If the mediator is binary, it is probably better to use ``binary_M=TRUE`` in order to specify that the $\alpha$ coefficients are to be interpreted on the logit (logistic regression) scale. A future version of this package might allow log link functions as an alternative to logit link functions, but this is currently not available. 
 
 # Example with a Binary Outcome
 
-Instead of, or in addition to, using a binary mediator, you can also use a binary outcome.  In this case, the scalar-on-function part of the model (the $\beta_0$, $\beta_X$ and $\beta_M(t)$ functions) would be fit using a logistic link function.  To demonstrate this, first  simulate a practice dataset with a binary outcome, using the ``simulate_binary_Y`` option in ``simulate_funmediation_example.`` We set this option to true (on) now, although it was false (off) by default.  (Note that we do not currently have a corresponding ``simulate_binary_M`` option in this function, as simulating realistic binary data trajectories is somewhat more difficult.)  
+Instead of, or in addition to, using a binary mediator, you can also use a binary outcome. In this case, the scalar-on-function part of the model (the $\beta_0$, $\beta_X$ and $\beta_M(t)$ functions) would be fit using a logistic link function. To demonstrate this, first  simulate a practice dataset with a binary outcome, using the ``simulate_binary_Y`` option in ``simulate_funmediation_example.`` We set this option to true (on) now, although it was false (off) by default. (Note that we do not currently have a corresponding ``simulate_binary_M`` option in this function, as simulating realistic binary data trajectories is somewhat more difficult.)  
 
 ```{r}
 set.seed(123)
@@ -283,7 +280,7 @@ data_with_binary_Y <- simulation_with_binary_Y$dataset
 head(data_with_binary_Y)
 ```
 
-Now fit the model, using the new dataset with binary $Y$, and using the ``binary_outcome`` option.  By default, ``binary_outcome`` is false, but here we set it to true in order to use this approach.  The ``binary_outcome`` option indicates that the $\beta$ coefficients are to be interpreted as logistic regression coefficients, similar to the ``binary_mediator`` option which does the same for the $\alpha$ coefficients.
+Now fit the model, using the new dataset with binary $Y$, and using the ``binary_outcome`` option. By default, ``binary_outcome`` is false, but here we set it to true in order to use this approach. The ``binary_outcome`` option indicates that the $\beta$ coefficients are to be interpreted as logistic regression coefficients, similar to the ``binary_mediator`` option which does the same for the $\alpha$ coefficients.
 
 ```{r}
 model_with_binary_Y <- funmediation(data=data_with_binary_Y,
@@ -294,25 +291,26 @@ model_with_binary_Y <- funmediation(data=data_with_binary_Y,
                              time=t,
                              binary_outcome=TRUE,
                              nboot=10)
-print(model_with_binary_Y);
-plot(model_with_binary_Y,type="coef")
+```
+
+```{r}
+print(model_with_binary_Y)
+plot(model_with_binary_Y, type="coef")
 ```
 
 Future work relative to this package may involve comparing potential significance tests for different parts of the model, in terms of power and coverage, as well as elucidating the assumptions required to estimate each part of the model causally.
 
-
 # References
-
 
 * Goldsmith, J., Bobb, J., Crainiceanu, C., Caffo, B., and Reich, D. (2011). Penalized functional regression. Journal of Computational and Graphical Statistics, 20(4), 830-851.
 
-* Hastie, T, Tibshirani, R. (1993). Varying-coefficient models. Journal of the Royal Statistical Socety, B, 55:757-796.
+* Hastie, T., & Tibshirani, R. (1993). Varying-coefficient models. Journal of the Royal Statistical Socety, B, 55:757-796.
 
 * Lindquist, M. A. (2012). Functional Causal Mediation Analysis With an Application to Brain Connectivity. Journal of the American Statistical Association, 107: 1297-1309.
 
 * Ramsay, J. O., & Silverman, B. W. (2005). Functional data analysis (2nd ed.).  New York: Springer.
 
-* Tan, X., Shiyko, M. P., Li, R., Li, Y., & Dierker, L. (2012). A time-varying effect model for intensive longitudinal data. Psychological Methods, 17: 61-77.
+* Tan, X., Shiyko, M. P., Li, R., Li, Y., & Deirker, L. (2012). A time-varying effect model for intensive longitudinal data. Psychological Methods, 17: 61-77.
 
 * Wood, S.N. (2017) Generalized Additive Models: an introduction with R (2nd edition), CRC.
 
