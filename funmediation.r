@@ -405,16 +405,14 @@ funmediation <- function(data,
     nobs <- length(mediator_columns);
     nsub <- length(wide_id);
     #--- EFFECT OF MEDIATOR M AND TREATMENT X ON OUTCOME Y ---;
-    ###print(str(local_wide_data));
-    ###print(head(OUTCOME));
-    ###print(MEDIATOR[1:5,1:5])
+    
     if (binary_mediator) {
-      pfr_formula <- OUTCOME~lf(MEDIATOR,
+      pfr_formula <- OUTCOME ~ lf(MEDIATOR,
                                 presmooth="bspline",
-                                presmooth.opts=list(nbasis=4))+TREATMENT;
+                                presmooth.opts=list(nbasis=4)) + TREATMENT;
     } else {
-      pfr_formula <- OUTCOME~lf(MEDIATOR,
-                                presmooth="interpolate")+TREATMENT;
+      pfr_formula <- OUTCOME ~ lf(MEDIATOR,
+                                presmooth="interpolate") + TREATMENT;
     }
     if (num_covariates_on_outcome>0) {
       for (this_one in 1:num_covariates_on_outcome) {
@@ -424,7 +422,7 @@ funmediation <- function(data,
         pfr_formula <- update(pfr_formula,new_one);
       }
     }
-    ###save.image("working.rdata");
+    
     if (binary_outcome) {
       funreg_MY <- try(refund::pfr(pfr_formula,
                                    scale=1,
@@ -455,8 +453,9 @@ funmediation <- function(data,
     } else {
       tvem_family <- gaussian();
     }
-    #--- DIRECT EFFECT OF TREATMENT X ON OUTCOME Y ---;
-    glm_formula <- OUTCOME~TREATMENT;
+    
+    #--- TOTAL EFFECT OF TREATMENT X ON OUTCOME Y ---;
+    glm_formula <- OUTCOME ~ TREATMENT;
     if (num_covariates_on_outcome>0) {
       for (this_one in 1:num_covariates_on_outcome) {
         new_one <- as.formula(paste("~.+",covariates_on_outcome_names[this_one],sep=""));
@@ -478,13 +477,14 @@ funmediation <- function(data,
     } else {
       tau_X_pvalue <- summary(model_for_total_effect_XY)$coefficients["TREATMENT","Pr(>|t|)"];
     }
+    
     #--- EFFECT OF TREATMENT X ON MEDIATOR M ---;
     local_long_data <- data.frame(id=rep(wide_id, each=nobs),
                                   time=rep(observed_time_grid, times=nsub),
                                   outcome=rep(OUTCOME, each=nobs),
                                   TREATMENT=rep(TREATMENT, each=nobs),
                                   MEDIATOR=as.vector(t(MEDIATOR)));
-    tvem_formula1 <- MEDIATOR~TREATMENT;
+    tvem_formula1 <- MEDIATOR ~ TREATMENT;
     tvem_formula2 <- tie_covariates_on_mediator;
     if (num_tve_covariates_on_mediator>0) {
       for (this_one in 1:num_tve_covariates_on_mediator) {
@@ -563,6 +563,7 @@ funmediation <- function(data,
     alpha_int_se <- tvem_XM$grid_fitted_coefficients[[1]]$standard_error;
     alpha_X_estimate <- tvem_XM$grid_fitted_coefficients[[2]]$estimate;
     alpha_X_se <- tvem_XM$grid_fitted_coefficients[[2]]$standard_error;
+    
     # #--- MEDIATED EFFECT OF TREATMENT X THROUGH MEDIATOR M ON OUTCOME Y ---;
     if (length(alpha_X_estimate)!=length(beta_M_estimate)) {
       stop("Dimension error in functional mediation function;")
@@ -640,10 +641,10 @@ funmediation <- function(data,
     bootstrap_results$ICs_table_from_bootstraps <- ICs_table_from_bootstraps;
     bootstrap_results$num_knots_from_bootstraps <- table(paste(apply(ICs_table_from_bootstraps,1,which.min)+1,"knots"));
   }
-  important_variable_names <- list( time = time_variable_name, 
-                                 treatment = treatment_variable_name, 
-                                 mediator = mediator_variable_name, 
-                                 outcome = outcome_variable_name);
+  important_variable_names <- list(time = time_variable_name, 
+                                   treatment = treatment_variable_name, 
+                                   mediator = mediator_variable_name, 
+                                   outcome = outcome_variable_name);
   answer <- list(observed_time_grid_for_debug=observed_time_grid,
                  wide_data_for_debug=wide_data,
                  original_results=original_results,
