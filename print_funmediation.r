@@ -22,13 +22,13 @@ print.funmediation <- function(x, ...) {
             x$important_variable_names[["mediator"]],
             ifelse(x$original_results$binary_mediator,
                    "(Assumed Binary)",
-                   "(Assumed Numeric)"),
+                   "(Assumed Continuous)"),
             "\n"));
   cat(paste("OUTCOME:",
             x$important_variable_names[["outcome"]],
             ifelse(x$original_results$binary_outcome,
                    "(Assumed Binary)",
-                   "(Assumed Numeric)"),
+                   "(Assumed Continuous)"),
             "\n"));
   cat("======================================================= \n");
   cat("Indirect effect bootstrap estimate:\n");
