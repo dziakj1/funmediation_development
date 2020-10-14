@@ -254,7 +254,7 @@ model_with_binary_M <- funmediation(data=data_with_covariate,
 
 ```{r}
 print(model_with_binary_M)
-plot(model_with_binary_M, type="coef")
+plot(model_with_binary_M, what_plot="coef")
 ```
 
 Note that if the ``binary_mediator=TRUE`` argument is not specified, the TVEM will be fit using an identity link (hence a linear model at any given time $t$) as for a normally distributed outcome. The function would not detect that ``binary_M`` consists of zeroes and ones and no other numbers. The identity link is probably not the best approach but might be an interesting comparison. If the mediator is binary, it is probably better to use ``binary_mediator=TRUE`` in order to specify that the $\alpha$ coefficients are to be interpreted on the logit (logistic regression) scale. A future version of this package might allow log link functions as an alternative to logit link functions, but this is currently not available. 
@@ -285,10 +285,8 @@ model_with_binary_Y <- funmediation(data=data_with_binary_Y,
 
 ```{r}
 print(model_with_binary_Y)
-plot(model_with_binary_Y, type="coef")
+plot(model_with_binary_Y, what_plot="coef")
 ```
-
-<!-- Future work relative to this package may involve comparing potential significance tests for different parts of the model, in terms of power and coverage, as well as elucidating the assumptions required to estimate each part of the model causally. -->
 
 # References
 
