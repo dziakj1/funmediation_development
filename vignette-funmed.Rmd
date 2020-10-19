@@ -94,7 +94,7 @@ print(head(the_data))
 summary(the_data)
 ```
 
-It would be reasonable to do other descriptive analyses but in order to demonstrate the function we proceed directly to the main analysis.
+It would be reasonable to do other descriptive analyses but in order to demonstrate the function we proceed immediately to the main analysis.
 
 # Running a Functional Mediation Model
 
@@ -142,7 +142,7 @@ plot(model1, what_plot="pfr")
 
 The function tends to be nonzero at least for higher values of time, and generally seems to be steadily increasing. One possible interpretation is that individuals who increase more (or decrease less) on average over time on the mediator tend to have a higher value on the outcome.
 
-Last, the ``coef`` plot summarizes all of the most important coefficients estimated in the model.  The upper left and upper right panes show the estimates of $\alpha_0(t)$ and $\alpha_X(t)$ from the model of the effect of $X$ on $M(t)$. The lower left shows the estimate of $\beta_M(t)$ from the model of the effect of $M(t)$ on $Y$ given $X$.  In the lower right panel, the estimate of the indirect is printed (not plotted, because it is a single number).
+Last, the ``coef`` plot summarizes all of the most important coefficients estimated in the model.  The upper left and upper right panes show the estimates of $\alpha_0(t)$ and $\alpha_X(t)$ from the model of the effect of $X$ on $M(t)$. The lower left shows the estimate of $\beta_M(t)$ from the model of the effect of $M(t)$ on $Y$ given $X$.  In the lower right panel, the estimate of the indirect effect is printed (not plotted, because it is a single number).
 
 ```{r}
 plot(model1, what_plot="coef")
@@ -171,7 +171,7 @@ The output object created, called ``model1``, contains useful information both o
 $\int \alpha_X(t)\beta_M(t)$ obtained without bootstrapping.
 
 * ``model1$original_results$tvem_XM_details``, 
-``$funreg_MY_details``, and ``$direct_effect_details`` give the fitted model objects from ``tvem``, ``pfr`` and ``glm``.  They might be useful for plots or diagnostics but might contain more technical detail than some users are interested in. 
+``$funreg_MY_details``, and ``$total_effect_details`` give the fitted model objects from ``tvem``, ``pfr`` and ``glm``.  They might be useful for plots or diagnostics but might contain more technical detail than some users are interested in. 
 
 
 ## Including a Covariate
