@@ -56,7 +56,7 @@ print.funmediation <- function(x, ...) {
   cat("======================================================= \n");
   cat("Parametric model for Predicting OUTCOME from TREATMENT \n");
   cat("  ignoring MEDIATOR: \n");
-  print(summary(x$original_results$direct_effect_details));
+  print(summary(x$original_results$total_effect_details));
   cat("======================================================= \n");
   if(!is.null(x$original_results$tvem_IC_table)) {
     cat("ICs table for selecting number of interior knots in TVEM:\n");

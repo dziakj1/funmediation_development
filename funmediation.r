@@ -38,10 +38,10 @@
 #' @param data The dataset containing the data to be analyzed, in long
 #'  format (one row per observation, multiple per individual).
 #' @param treatment  The name of the variable containing the treatment
-#'  assignment, assumed to be unidimensional (dichotomous or numerical;
-#'  we recommend dichotomous with 0 for control and 1 for experimental).
-#'  The values of this variable should be the same for each row for a
-#'  given subject.
+#'  assignment, assumed to be unidimensional (either binary
+#'  or else numeric).  We recommend a binary (dichotomous) treatment with
+#'  0 for control and 1 for experimental).  The values of this variable
+#'  should be the same for each row for a given subject.
 #' @param mediator The name of the mediator variable. The values of
 #' this variable can (and should) vary within each subject.
 #' @param outcome The name of the outcome variable. The values of this
@@ -144,7 +144,7 @@
 #' \item{funreg_MY_details}{Detailed output from the refund::pfr function for
 #' the scalar-on-function functional regression predicting the outcome, Y, from
 #' the treatment, X, and mediator, M.}
-#' \item{direct_effect_details}{Detailed output from the linear or generalized
+#' \item{total_effect_details}{Detailed output from the linear or generalized
 #' linear model predicting the outcome from the treatment alone, ignoring the
 #' mediator (i.e., total effect)}
 #' }
@@ -167,7 +167,7 @@
 #' confidence interval using the percentile method in boot.ci in the boot package.}
 #' \item{indirect_effect_boot_perc_upper}{Upper end of the bootstrap
 #' confidence interval using the percentile method.}
-#' \item{boot_level}{The beta level used for the bootstrap confidence interval.}
+#' \item{boot_level}{The alpha level used for the bootstrap confidence interval.}
 #' \item{boot1}{The output returned from the boot function.}
 #' \item{time.required}{The amount of time spent doing the bootstrap test,
 #' including generating and analyzing all samples.}
@@ -405,7 +405,7 @@ funmediation <- function(data,
     nobs <- length(mediator_columns);
     nsub <- length(wide_id);
     #--- EFFECT OF MEDIATOR M AND TREATMENT X ON OUTCOME Y ---;
-    
+
     if (binary_mediator) {
       pfr_formula <- OUTCOME ~ lf(MEDIATOR,
                                 presmooth="bspline",
@@ -422,7 +422,7 @@ funmediation <- function(data,
         pfr_formula <- update(pfr_formula,new_one);
       }
     }
-    
+
     if (binary_outcome) {
       funreg_MY <- try(refund::pfr(pfr_formula,
                                    scale=1,
@@ -453,7 +453,7 @@ funmediation <- function(data,
     } else {
       tvem_family <- gaussian();
     }
-    
+
     #--- TOTAL EFFECT OF TREATMENT X ON OUTCOME Y ---;
     glm_formula <- OUTCOME ~ TREATMENT;
     if (num_covariates_on_outcome>0) {
@@ -477,7 +477,7 @@ funmediation <- function(data,
     } else {
       tau_X_pvalue <- summary(model_for_total_effect_XY)$coefficients["TREATMENT","Pr(>|t|)"];
     }
-    
+
     #--- EFFECT OF TREATMENT X ON MEDIATOR M ---;
     local_long_data <- data.frame(id=rep(wide_id, each=nobs),
                                   time=rep(observed_time_grid, times=nsub),
@@ -563,7 +563,7 @@ funmediation <- function(data,
     alpha_int_se <- tvem_XM$grid_fitted_coefficients[[1]]$standard_error;
     alpha_X_estimate <- tvem_XM$grid_fitted_coefficients[[2]]$estimate;
     alpha_X_se <- tvem_XM$grid_fitted_coefficients[[2]]$standard_error;
-    
+
     # #--- MEDIATED EFFECT OF TREATMENT X THROUGH MEDIATOR M ON OUTCOME Y ---;
     if (length(alpha_X_estimate)!=length(beta_M_estimate)) {
       stop("Dimension error in functional mediation function;")
@@ -590,7 +590,7 @@ funmediation <- function(data,
                           indirect_effect_estimate=indirect_effect_estimate,
                           tvem_XM_details=tvem_XM,
                           funreg_MY_details=funreg_MY,
-                          direct_effect_details=model_for_total_effect_XY,
+                          total_effect_details=model_for_total_effect_XY,
                           binary_mediator=binary_mediator,
                           binary_outcome=binary_outcome);
       if (tvem_do_loop) {
@@ -641,9 +641,9 @@ funmediation <- function(data,
     bootstrap_results$ICs_table_from_bootstraps <- ICs_table_from_bootstraps;
     bootstrap_results$num_knots_from_bootstraps <- table(paste(apply(ICs_table_from_bootstraps,1,which.min)+1,"knots"));
   }
-  important_variable_names <- list(time = time_variable_name, 
-                                   treatment = treatment_variable_name, 
-                                   mediator = mediator_variable_name, 
+  important_variable_names <- list(time = time_variable_name,
+                                   treatment = treatment_variable_name,
+                                   mediator = mediator_variable_name,
                                    outcome = outcome_variable_name);
   answer <- list(observed_time_grid_for_debug=observed_time_grid,
                  wide_data_for_debug=wide_data,
