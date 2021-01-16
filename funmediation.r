@@ -316,8 +316,6 @@ funmediation <- function(data,
     stopifnot(length(id_variable)==nrow(tve_covariates_on_mediator_data));
   }
   temp_treatment_variables_matrix <- matrix(NA,nsub,num_treatment_variables);
-    print("---start checking---"); 
-  print(class(temp_treatment_variables_matrix));
   for (this_id in 1:length(wide_id)) {
     these_rows <- which(id_variable==wide_id[this_id]);
     if (length(these_rows)>0) {
@@ -412,12 +410,6 @@ funmediation <- function(data,
   analyze_data_for_mediation <- function(wide_data,
                                          indices,
                                          get_details=FALSE) {
-    print("----Inside------------");
-    print(str(wide_data));
-    print(str(indices));
-    print(treatment_columns);
-    print(mediator_columns);
-    print(outcome_column);
     local_wide_data <- wide_data[indices,];
     #--- Take data frame apart into pieces to use with pfr function
     MEDIATOR <- as.matrix(local_wide_data[,mediator_columns]);
@@ -467,12 +459,6 @@ funmediation <- function(data,
         pfr_formula <- update(pfr_formula,new_one);
       }
     }
-    print("For debug");
-    str(OUTCOME);
-    str(MEDIATOR);
-    str(TREATMENT1);
-    str(TREATMENT2);
-    print(pfr_formula);
     if (binary_outcome) {
       funreg_MY <- try(refund::pfr(pfr_formula,
                                    scale=1,
@@ -723,8 +709,6 @@ funmediation <- function(data,
   #---------------- Call function -----------;
   #------------------------------------------;
   ############debug(analyze_data_for_mediation);
-  print("----Outside------------");
-  print(str(wide_data));
   original_results <- analyze_data_for_mediation(wide_data,
                                                  indices=1:nrow(wide_data),
                                                  get_details=TRUE);

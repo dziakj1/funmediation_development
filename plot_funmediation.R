@@ -30,7 +30,7 @@
 #' @param ... Further arguments currently not supported
 #'
 #' @import tvem
-#' @importFrom graphics par plot text
+#' @importFrom graphics par plot text lines
 #' @exportMethod plot
 #' @export
 #' @method plot funmediation
@@ -84,7 +84,7 @@ plot.funmediation <- function(x,
       lines(x$original_results$time_grid,
             x$original_results$alpha_X_estimate+1.96*x$original_results$alpha_X_se);
     }
-    if (num_treatment_variables==2 | 
+    if (num_treatment_variables==2 |
         num_treatment_variables==3 |
         num_treatment_variables==4 ) {
       for (j in 1:num_treatment_variables) {
