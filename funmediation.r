@@ -252,8 +252,12 @@ funmediation <- function(data,
   long_data_for_analysis <- as.data.frame(eval.parent(data));
   id_variable <- long_data_for_analysis[,id_variable_name];
   if (min(table(id_variable))<2) {
-    warning(paste("At least one subject has less than two ",
-                  "measurement occasions.","We suggest using interpolate=FALSE"))
+    message <- paste("At least one subject has less than two",
+                  "measurement occasions.");
+	if (interpolate==TRUE) {
+	   message <- paste(message, "We suggest using interpolate=FALSE");
+	}
+	warning(message);
   }
   time_variable <- long_data_for_analysis[,time_variable_name];
   treatment_variables <- long_data_for_analysis[,treatment_variable_names,drop=FALSE];
@@ -457,10 +461,12 @@ funmediation <- function(data,
     #--- EFFECT OF MEDIATOR M AND TREATMENT X ON OUTCOME Y ---;  
     if (binary_mediator==TRUE | interpolate==FALSE) {
       pfr_formula <- OUTCOME ~ lf(MEDIATOR,
+	                              argvals=observed_time_grid, 
                                   presmooth="bspline",
                                   presmooth.opts=list(nbasis=4));
     } else {
       pfr_formula <- OUTCOME ~ lf(MEDIATOR,
+	                              argvals=observed_time_grid, 
                                   presmooth="interpolate");
     }
     if (length(treatment_columns)==1) {
@@ -742,6 +748,9 @@ funmediation <- function(data,
                       statistic=analyze_data_for_mediation,
                       R=nboot);
   cat("Done bootstrapping.\n");
+  if (nboot<50) {
+  warning("The number of bootstrap samples was very small and results will be dubious.");
+  }
   boot_norm <- list();
   boot_basic <- list();
   boot_perc <- list();
