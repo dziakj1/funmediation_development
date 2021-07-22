@@ -30,9 +30,9 @@ print.funmediation <- function(x, ...) {
                    "(Assumed Binary)",
                    "(Assumed Continuous)"),
             "\n"));
-  cat("======================================================= \n");
+  cat("=======================================================");
   for (j in 1:num_treatment_variables) {
-    cat(paste("DIRECT EFFECT OF",treatment_variable_names[j],"...\n"))
+    cat(paste(" \nDIRECT EFFECT OF",treatment_variable_names[j],"...\n"))
     cat(" Direct effect estimate:\n" );
     cat(x$original_results$beta_X_estimate[j]);
     cat("\n Direct effect standard error:\n" );
@@ -49,9 +49,9 @@ print.funmediation <- function(x, ...) {
             round(x$bootstrap_results$direct_effect_boot_perc[[j]]$percent[,5],4)));
     }
   }
-  cat("\n======================================================= \n");
+  cat("\n======================================================= ");
   for (j in 1:num_treatment_variables) {
-    cat(paste("INDIRECT EFFECT OF",treatment_variable_names[j],"...\n"))
+    cat(paste("\nINDIRECT EFFECT OF",treatment_variable_names[j],"...\n"))
     cat(" Indirect effect parametric estimate:\n ");
     cat(x$original_results$indirect_effect_estimate[j]);
     cat("\n Indirect effect bootstrap estimate:\n ");
@@ -65,8 +65,8 @@ print.funmediation <- function(x, ...) {
       cat(c(round(x$bootstrap_results$indirect_effect_boot_perc[[j]]$percent[,4],4), ", ",
             round(x$bootstrap_results$indirect_effect_boot_perc[[j]]$percent[,5],4)));
     }
-    cat("\n======================================================= \n");
   }
+  cat("\n======================================================= \n");
   cat("Computation time:\n");
   print(x$bootstrap_results$time_required);
   cat("======================================================= \n");
