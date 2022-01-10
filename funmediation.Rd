@@ -24,8 +24,7 @@ funmediation(
   binary_mediator = FALSE,
   binary_outcome = FALSE,
   nboot = 200,
-  boot_level = 0.05,
-  show_progress = FALSE
+  boot_level = 0.05
 )
 }
 \arguments{
@@ -112,11 +111,6 @@ samples and preferably 500 or more.}
 
 \item{boot_level}{One minus the nominal coverage for
 the bootstrap confidence interval estimates.}
-
-\item{show_progress}{Whether to display intermediate updates on the progress of
-the bootstrap simulations.  If show_progress==FALSE then the funmediation
-function runs silently but results can be viewed via the print and plot methods.
-If show_progress==TRUE then progress messages will be printed.}
 }
 \value{
 An object of type funmediation. The components of an object of
@@ -202,7 +196,7 @@ including generating and analyzing all samples.}
 \description{
 Calculate indirect effect of a binary treatment on a scalar
 response as mediated by a longitudinal functional trajectory
-(see Baron & Kenny, 1986; Lindquist, 2012; Coffman et al., 2021).
+(see Baron & Kenny, 1986; Lindquist, 2012; Coffman et al., 2019).
 }
 \note{
 This function calls the tvem function in the tvem package.
@@ -217,8 +211,10 @@ distinction in social psychological research: Conceptual, strategic,
 and statistical considerations. Journal of Personality & Social
 Psychology, 51: 1173-1182.
 
-Coffman, D. L., Dziak, J. J., Litson, K., Chakraborti, Y., Piper, M. E., & Li, R. #' (2021). A causal approach to functional mediation analysis with application to a
-smoking cessation intervention. <arXiv:2112.03960>
+Coffman, D. L., Dziak, J. J., Li, R., & Piper, M. (2019). Functional
+regression mediation analysis with application to a smoking
+cessation intervention. Joint Statistical Meetings presentation,
+August 2019.
 
 Dziak, J. J., Coffman, D. L., Reimherr, M., Petrovich, J., Li, R.,
 Shiffman, S., & Shiyko, M. P. (2019). Scalar-on-function regression
@@ -228,7 +224,7 @@ Statistics Surveys, 13, 150-180. <doi:10.1214/19-SS126>
 
 Goldsmith, J., Bobb, J., Crainiceanu, C., Caffo, B., & Reich, D.
 (2011). Penalized functional regression. Journal of Computational
-and Graphical Statistics, 20(4), 830-851. <doi:10.1198/jcgs.2010.10007>
+and Graphical Statistics, 20(4), 830-851.
 
 Lindquist, M. A. (2012). Functional Causal Mediation Analysis
 With an Application to Brain Connectivity. Journal of the American

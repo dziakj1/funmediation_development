@@ -11,9 +11,6 @@
 
 \item{...}{Further arguments currently not supported}
 }
-\value{
-This function does not return an object, but is called for its side effect of printing information.
-}
 \description{
 print.funmediation:  Print output from a model that was fit by the funmediation function.
 }

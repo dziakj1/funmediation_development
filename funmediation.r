@@ -2,7 +2,7 @@
 #'
 #' Calculate indirect effect of a binary treatment on a scalar
 #' response as mediated by a longitudinal functional trajectory
-#' (see Baron & Kenny, 1986; Lindquist, 2012; Coffman et al., 2021).
+#' (see Baron & Kenny, 1986; Lindquist, 2012; Coffman et al., 2019).
 #'
 #' @note This function calls the tvem function in the tvem package.
 #' It also calls the pfr function in the refund package (see
@@ -16,8 +16,10 @@
 #' and statistical considerations. Journal of Personality & Social
 #' Psychology, 51: 1173-1182.
 #' @references
-#' Coffman, D. L., Dziak, J. J., Litson, K., Chakraborti, Y., Piper, M. E., & Li, R. #' (2021). A causal approach to functional mediation analysis with application to a
-#' smoking cessation intervention. <arXiv:2112.03960>
+#' Coffman, D. L., Dziak, J. J., Li, R., & Piper, M. (2019). Functional
+#' regression mediation analysis with application to a smoking
+#' cessation intervention. Joint Statistical Meetings presentation,
+#' August 2019.
 #' @references
 #' Dziak, J. J., Coffman, D. L., Reimherr, M., Petrovich, J., Li, R.,
 #' Shiffman, S., & Shiyko, M. P. (2019). Scalar-on-function regression
@@ -27,7 +29,7 @@
 #' @references
 #' Goldsmith, J., Bobb, J., Crainiceanu, C., Caffo, B., & Reich, D.
 #' (2011). Penalized functional regression. Journal of Computational
-#' and Graphical Statistics, 20(4), 830-851. <doi:10.1198/jcgs.2010.10007>
+#' and Graphical Statistics, 20(4), 830-851.
 #' @references
 #' Lindquist, M. A. (2012). Functional Causal Mediation Analysis
 #' With an Application to Brain Connectivity. Journal of the American
@@ -97,10 +99,6 @@
 #' criterion used will be
 #' a pseudolikelihood version of AIC instead. If tvem_do_loop is FALSE then
 #' tvem_use_bic is ignored.
-#' @param show_progress Whether to display intermediate updates on the progress of
-#' the bootstrap simulations.  If show_progress==FALSE then the funmediation
-#' function runs silently but results can be viewed via the print and plot methods.
-#' If show_progress==TRUE then progress messages will be printed.
 #'
 #' @return An object of type funmediation. The components of an object of
 #' type funmediation are as follows:
@@ -209,8 +207,7 @@ funmediation <- function(data,
                          binary_mediator=FALSE, # FALSE for numerical mediator, TRUE for dichotomous 0/1;
                          binary_outcome=FALSE, # FALSE for numerical outcome, TRUE for dichotomous 0/1;
                          nboot=200,
-                         boot_level=.05,
-                         show_progress=FALSE) {
+                         boot_level=.05) {
   #-------------------------------------------;
   #--- PROCESSING OF INPUT -------------------;
   #-------------------------------------------;
@@ -437,8 +434,8 @@ funmediation <- function(data,
                                          indices,
                                          get_details=FALSE) {
     local_wide_data <- wide_data[indices,];
-    usable <- which((apply(!is.na(local_wide_data[,mediator_columns]),1,sum)>=1) &
-                      !is.na(local_wide_data[,outcome_column]));
+    usable <- which((apply(!is.na(local_wide_data[,mediator_columns]),1,sum)>=1) & 
+                      !is.na(local_wide_data[,outcome_column])); 
     local_wide_data <- local_wide_data[usable,];
     #--- Take data frame apart into pieces to use with pfr function
     MEDIATOR <- as.matrix(local_wide_data[,mediator_columns]);
@@ -627,9 +624,9 @@ funmediation <- function(data,
     }
     local_long_data <- local_long_data[which(!is.na(local_long_data$MEDIATOR)),];
     # listwise deletion to remove empty observations;
-
+    
     if (get_details) {
-
+      
       if (min(table(local_long_data$id))<2) {
         message <- "At least one subject has less than two non-missing measurement occasions.";
         if (interpolate==TRUE) {
@@ -637,9 +634,9 @@ funmediation <- function(data,
         }
         warning(message);
       }
-
+      
     }
-
+    
     if (tvem_do_loop) {
       tvem_results_list <- list();
       max_knots <- tvem_num_knots;
@@ -712,7 +709,7 @@ funmediation <- function(data,
         alpha_X_se[[j]] <- tvem_XM$grid_fitted_coefficients[[1+j]]$standard_error;
         indirect_effect_estimate[j] <- mean(alpha_X_estimate[[j]]*beta_M_estimate[[j]])*interval_width;
       }
-    }
+    } 
     if (get_details) {
       answer_list <- list(time_grid=time_grid_for_fitting,
                           alpha_int_estimate=alpha_int_estimate,
@@ -730,7 +727,7 @@ funmediation <- function(data,
                           tau_int_se=tau_int_se,
                           tau_X_estimate=tau_X_estimate,
                           tau_X_se=tau_X_se,
-                          tau_X_pvalue=tau_X_pvalue,
+                          tau_X_pvalue=tau_X_pvalue, 
                           interval_width=interval_width,
                           indirect_effect_estimate=indirect_effect_estimate,
                           tvem_XM_details=tvem_XM,
@@ -743,9 +740,7 @@ funmediation <- function(data,
       }
       return(answer_list);
     } else {
-      if (show_progress) {
-        if (this_bootstrap>0) {cat(this_bootstrap);cat(".");}
-      }
+      if (this_bootstrap>0) {cat(this_bootstrap);cat(".");}
       this_bootstrap <<- this_bootstrap + 1;
       if (tvem_do_loop) {
         ICs_table_from_bootstraps <<- rbind(ICs_table_from_bootstraps,IC_table[,2]);
@@ -763,17 +758,13 @@ funmediation <- function(data,
                                                  get_details=TRUE);
   before_boot <- Sys.time();
   ICs_table_from_bootstraps <- NULL;
-  if (show_progress) {
-    cat("Ran original results.\n");
-    cat("Working on bootstrap results:\n");
-  }
+  cat("Ran original results.\n");
+  cat("Working on bootstrap results:\n");
   this_bootstrap <- 0;
   boot1 <- boot::boot(data=wide_data,
                       statistic=analyze_data_for_mediation,
                       R=nboot);
-  if (show_progress) {
-    cat("Done bootstrapping.\n");
-  }
+  cat("Done bootstrapping.\n");
   if (nboot<50) {
     warning("The number of bootstrap samples was very small and results will be dubious.");
   }
@@ -809,17 +800,17 @@ funmediation <- function(data,
     direct_effect_boot_estimate[j] <- boot::norm.ci(boot1,conf=.0001,index=num_treatment_variables+j)[2];
     direct_effect_boot_se[j] <- sd(boot1$t[,num_treatment_variables+j]);
     direct_effect_boot_norm[[j]] <- boot::boot.ci(boot1,
-                                                  conf=1-boot_level,
-                                                  index=num_treatment_variables+j,
-                                                  type="norm");
+                                             conf=1-boot_level,
+                                             index=num_treatment_variables+j,
+                                             type="norm");
     direct_effect_boot_basic[[j]] <- boot::boot.ci(boot1,
-                                                   conf=1-boot_level,
-                                                   index=num_treatment_variables+j,
-                                                   type="basic");
+                                              conf=1-boot_level,
+                                              index=num_treatment_variables+j,
+                                              type="basic");
     direct_effect_boot_perc[[j]] <- boot::boot.ci(boot1,
-                                                  conf=1-boot_level,
-                                                  index=num_treatment_variables+j,
-                                                  type="perc");
+                                             conf=1-boot_level,
+                                             index=num_treatment_variables+j,
+                                             type="perc");
   }
   after_boot <- Sys.time();
   bootstrap_results <- list(indirect_effect_boot_estimate=indirect_effect_boot_estimate,
